@@ -7,6 +7,7 @@ import pickle
 import glob
 from multiprocessing import Pool
 from functools import partial
+from skimage.transform import resize
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Image-based Vulnerability Detection.')
@@ -24,7 +25,7 @@ def sentence_embedding(sentence):
     emb = sent2vec_model.embed_sentence(sentence)
     return emb[0]
 
-def image_generation(dot):
+def image_generation(dot,target_num_points):
     try:
         pdg = graph_extraction(dot)
         labels_dict = nx.get_node_attributes(pdg, 'label')
@@ -65,7 +66,14 @@ def image_generation(dot):
             katz_cen = katz_cen_dict[label]
             katz_channel.append(katz_cen * line_vec)
 
-        return (degree_channel, closeness_channel, katz_channel)
+        # 将图像调整为具有固定点数的大小
+        # 假设目标图像大小为 target_num_points x embedding_dim
+        resized_degree_channel = resize(degree_channel, (target_num_points, len(degree_channel[0])))
+        resized_closeness_channel = resize(closeness_channel, (target_num_points, len(closeness_channel[0])))
+        resized_katz_channel = resize(katz_channel, (target_num_points, len(katz_channel[0])))
+
+        # return (degree_channel, closeness_channel, katz_channel)
+        return (resized_degree_channel, resized_closeness_channel, resized_katz_channel)
     except:
         return None
 
@@ -75,7 +83,8 @@ def write_to_pkl(dot, out, existing_files):
         return None
     else:
         print(dot_name)
-        channels = image_generation(dot)
+        # 论文中实验显示数据库中大部分func的code line为100行
+        channels = image_generation(dot,100)
         if channels == None:
             return None
         else:
