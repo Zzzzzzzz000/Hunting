@@ -37,7 +37,9 @@ def image_generation(dot):
     
         #print(labels_code)
         degree_cen_dict = nx.degree_centrality(pdg)
-        closeness_cen_dict = nx.closeness_centrality(pdg)
+        #closeness_cen_dict = nx.closeness_centrality(pdg)
+        betweenness_cen_dict = nx.betweenness_centrality(pdg)
+        harmonic_cen_dict = nx.harmonic_centrality(pdg)
         #harmonic_cen_dict = nx.harmonic_centrality(pdg)
     
         G = nx.DiGraph()
@@ -50,22 +52,37 @@ def image_generation(dot):
         # print(katz_cen_dict)
     
         degree_channel = []
-        closeness_channel = []
+        #closeness_channel = []
         katz_channel = []
+        betweenness_channel = []
+        harmonic_channel = []
+
         for label, code in labels_code.items():
             line_vec = sentence_embedding(code)
             line_vec = np.array(line_vec)
-    
+
+            # 度中心性
             degree_cen = degree_cen_dict[label]
             degree_channel.append(degree_cen * line_vec)
-    
-            closeness_cen = closeness_cen_dict[label]
-            closeness_channel.append(closeness_cen * line_vec)
-    
+
+            # # 紧密中心性
+            # closeness_cen = closeness_cen_dict[label]
+            # closeness_channel.append(closeness_cen * line_vec)
+
+            # 卡兹中心性
             katz_cen = katz_cen_dict[label]
             katz_channel.append(katz_cen * line_vec)
 
-        return (degree_channel, closeness_channel, katz_channel)
+            # 中介中心性
+            betweenness_cen = betweenness_cen_dict[label]
+            betweenness_channel.append(betweenness_cen * line_vec)
+
+            # 调和中心性
+            harmonic_cen = harmonic_cen_dict[label]
+            harmonic_channel.append(harmonic_cen * line_vec)
+
+        # return (degree_channel, closeness_channel, katz_channel)
+        return (degree_channel, katz_channel, betweenness_channel, harmonic_channel)
     except:
         return None
 
@@ -79,9 +96,11 @@ def write_to_pkl(dot, out, existing_files):
         if channels == None:
             return None
         else:
-            (degree_channel, closeness_channel, katz_channel) = channels
+            # (degree_channel, closeness_channel, katz_channel) = channels
+            (degree_channel, katz_channel, betweenness_channel, harmonic_channel) = channels
             out_pkl = out + dot_name + '.pkl'
-            data = [degree_channel, closeness_channel, katz_channel]
+            # data = [degree_channel, closeness_channel, katz_channel]
+            data = [degree_channel, katz_channel, betweenness_channel, harmonic_channel]
             with open(out_pkl, 'wb') as f:
                 pickle.dump(data, f)
 
