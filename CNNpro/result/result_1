@@ -1,0 +1,5 @@
+Epoch 1/5, Training Loss: 0.1820871034792976, Test Loss: 0.06131620861658126, Accuracy: 0.9813
+Epoch 2/5, Training Loss: 0.04889714158910102, Test Loss: 0.03897653062917607, Accuracy: 0.9875
+Epoch 3/5, Training Loss: 0.03476057790908223, Test Loss: 0.0356006958387112, Accuracy: 0.9895
+Epoch 4/5, Training Loss: 0.028613337383522758, Test Loss: 0.040448291798650636, Accuracy: 0.989
+Epoch 5/5, Training Loss: 0.023333719254599566, Test Loss: 0.037034329515284, Accuracy: 0.9884
